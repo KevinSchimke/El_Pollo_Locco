@@ -10,7 +10,7 @@ class Character extends MovableObject{
     ];
 
     world;
-
+    speed = 10;
     constructor(){
         super().loadImage('./img/2_character_pepe/1_idle/idle/I-1.png')
         this.loadImages(this.IMAGES_WALKING);
@@ -18,15 +18,29 @@ class Character extends MovableObject{
     }
 
     animate() {
+
+        setInterval(() => {
+            if(this.world.keyboard.RIGHT){
+                this.x += this.speed;
+                this.otherDirection = true;
+            }
+            if(this.world.keyboard.LEFT){
+                this.x -= this.speed;
+                this.otherDirection = true;
+            }
+
+
+        },1000/60);
+
         setInterval(() => {
 
-            if(this.world.keyboard.RIGHT){
+            if(this.world.keyboard.RIGHT || this.world.keyboard.LEFT){
                 let i =  this.currentImage % this.IMAGES_WALKING.length;
-            let path = this.IMAGES_WALKING[i];
-            this.img = this.imageCache[path];
-            this.currentImage++;  
+                let path = this.IMAGES_WALKING[i];
+                this.img = this.imageCache[path];
+                this.currentImage++;  
             }
-            },150);
+            },50);
             
 
             
