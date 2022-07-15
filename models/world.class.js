@@ -1,4 +1,4 @@
-class World{
+class World {
     character = new Character();
     level = level1;
     canvas;
@@ -7,7 +7,7 @@ class World{
     camera_x = 0;
 
 
-    constructor(canvas, keyboard){
+    constructor(canvas, keyboard) {
         this.ctx = canvas.getContext("2d");
         this.canvas = canvas;
         this.keyboard = keyboard;
@@ -15,15 +15,15 @@ class World{
         this.setWorld();
     }
 
-    setWorld(){
+    setWorld() {
         this.character.world = this;
     }
 
 
-    draw(){
+    draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        this.ctx.translate(this.camera_x,0);
+        this.ctx.translate(this.camera_x, 0);
 
         this.addObjectToMap(this.level.backgroundObjects);
 
@@ -31,33 +31,40 @@ class World{
         this.addObjectToMap(this.level.enemies);
         this.addObjectToMap(this.level.clouds);
 
-        this.ctx.translate(-this.camera_x,0);
+        this.ctx.translate(-this.camera_x, 0);
 
         let self = this;
-        requestAnimationFrame(function() {
+        requestAnimationFrame(function () {
             self.draw();
         });
     }
 
-    addObjectToMap(objects){
+    addObjectToMap(objects) {
         objects.forEach(object => {
             this.addToMap(object);
         });
     }
 
-    addToMap(mo){
-        if(mo.otherDirection){
-            this.ctx.save();
-            this.ctx.translate(mo.width, 0);
-            this.ctx.scale(-1, 1);
-            mo.x = mo.x* -1;
+    addToMap(mo) {
+        if (mo.otherDirection) {
+            this.reflectImage(mo);
         }
-
-        this.ctx.drawImage(mo.img, mo.x, mo.y, mo.width, mo.height);
-
-        if(mo.otherDirection){
-            mo.x = mo.x* -1;
-            this.ctx.restore();
+        mo.draw(this.ctx);
+        mo.drawFrame(this.ctx);
+        if (mo.otherDirection) {
+            this.reflectImageBack(mo);
         }
+    }
+
+    reflectImage(mo) {
+        this.ctx.save();
+        this.ctx.translate(mo.width, 0);
+        this.ctx.scale(-1, 1);
+        mo.x = mo.x * -1;
+    }
+
+    reflectImageBack(mo) {
+        mo.x = mo.x * -1;
+        this.ctx.restore();
     }
 }
