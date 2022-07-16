@@ -5,6 +5,7 @@ class World {
     ctx;
     keyboard;
     camera_x = 0;
+    statusbar = new StatusBar();
 
 
     constructor(canvas, keyboard) {
@@ -27,6 +28,10 @@ class World {
         this.ctx.translate(this.camera_x, 0);
 
         this.addObjectToMap(this.level.backgroundObjects);
+
+        this.ctx.translate(-this.camera_x, 0);
+        this.addToMap(this.statusbar);
+        this.ctx.translate(this.camera_x, 0);
 
         this.addToMap(this.character);
         this.addObjectToMap(this.level.enemies);
@@ -74,6 +79,7 @@ class World {
             this.level.enemies.forEach((enemy) =>{
                 if (this.character.isColliding(enemy)) {
                     this.character.hit();
+                    this.statusbar.setPercentage(this.character.energy)
                 }
             });
         }, 200);
