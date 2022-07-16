@@ -5,7 +5,9 @@ class World {
     ctx;
     keyboard;
     camera_x = 0;
-    statusbar = new StatusBar();
+    statusbar_health = new StatusBarHealth();
+    statusbar_coin = new StatusBarCoin();
+    statusbar_bottle = new StatusBarBottle();
 
 
     constructor(canvas, keyboard) {
@@ -30,7 +32,9 @@ class World {
         this.addObjectToMap(this.level.backgroundObjects);
 
         this.ctx.translate(-this.camera_x, 0);
-        this.addToMap(this.statusbar);
+        this.addToMap(this.statusbar_health);
+        this.addToMap(this.statusbar_coin);
+        this.addToMap(this.statusbar_bottle);
         this.ctx.translate(this.camera_x, 0);
 
         this.addToMap(this.character);
@@ -79,7 +83,7 @@ class World {
             this.level.enemies.forEach((enemy) =>{
                 if (this.character.isColliding(enemy)) {
                     this.character.hit();
-                    this.statusbar.setPercentage(this.character.energy)
+                    this.statusbar_health.setPercentage(this.character.energy)
                 }
             });
         }, 200);
