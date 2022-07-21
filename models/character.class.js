@@ -68,7 +68,12 @@ class Character extends MovableObject {
             if ((this.world.keyboard.UP || this.world.keyboard.SPACE) && !this.isAboveGround()) {
                 this.jump();
             }
-            this.world.camera_x = - this.x + 50;
+            if (this.x > 2157) {
+                this.world.camera_x = - 2157;
+            }else{
+                this.world.camera_x = - this.x + 50;
+            }
+            
         }, 1000 / 60);
 
         setInterval(() => {

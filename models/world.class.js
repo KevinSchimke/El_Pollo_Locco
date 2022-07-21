@@ -32,16 +32,16 @@ class World {
 
         this.addObjectToMap(this.level.backgroundObjects);
 
+        this.addToMap(this.character);
+        this.addObjectToMap(this.level.enemies);
+        this.addObjectToMap(this.level.clouds);
+        this.addObjectToMap(this.throwable);
+
         this.ctx.translate(-this.camera_x, 0);
         this.addToMap(this.statusbar_health);
         this.addToMap(this.statusbar_coin);
         this.addToMap(this.statusbar_bottle);
         this.ctx.translate(this.camera_x, 0);
-
-        this.addToMap(this.character);
-        this.addObjectToMap(this.level.enemies);
-        this.addObjectToMap(this.level.clouds);
-        this.addObjectToMap(this.throwable);
 
         this.ctx.translate(-this.camera_x, 0);
 
@@ -89,7 +89,9 @@ class World {
 
     checkCollision() {
         this.level.enemies.forEach((enemy) => {
+            
             if (this.character.isColliding(enemy)) {
+                console.log('treffer')
                 this.character.hit();
                 this.statusbar_health.setPercentage(this.character.energy)
             }
