@@ -9,11 +9,21 @@ class StatusBarCoin extends StatusBar {
     ];
 
     x = 255;
-
+    coins = 0;
     constructor() {
         super();
         this.loadImages(this.IMAGES);
         this.setPercentage(0);
+    }
+
+
+
+    collectCoin() {
+        this.coins += 20;
+        if (this.coins > 100) {
+            this.coins = 100;
+        }
+        this.setPercentage(this.coins);
     }
 
 }

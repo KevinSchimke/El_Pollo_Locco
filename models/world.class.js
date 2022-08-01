@@ -11,10 +11,11 @@ class World {
     throwable = [];
 
 
-    constructor(canvas, keyboard) {
+    constructor(canvas, keyboard, gameEnd) {
         this.ctx = canvas.getContext("2d");
         this.canvas = canvas;
         this.keyboard = keyboard;
+        this.gameEnd = gameEnd;
         this.draw();
         this.setWorld();
         this.run();
@@ -34,6 +35,9 @@ class World {
 
         this.addToMap(this.character);
         this.addObjectToMap(this.level.enemies);
+        this.addObjectToMap(this.level.endboss);
+        this.addObjectToMap(this.level.coins);
+        this.addObjectToMap(this.level.bottles);
         this.addObjectToMap(this.level.clouds);
         this.addObjectToMap(this.throwable);
 
@@ -44,7 +48,6 @@ class World {
         this.ctx.translate(this.camera_x, 0);
 
         this.ctx.translate(-this.camera_x, 0);
-
         let self = this;
         requestAnimationFrame(function () {
             self.draw();
@@ -62,7 +65,7 @@ class World {
             this.reflectImage(mo);
         }
         mo.draw(this.ctx);
-        mo.drawFrame(this.ctx);
+        // mo.drawFrame(this.ctx);
         if (mo.otherDirection) {
             this.reflectImageBack(mo);
         }
@@ -88,21 +91,75 @@ class World {
     }
 
     checkCollision() {
+        this.checkCollisionWithEnemies();
+        this.checkCollisionWithCoins();
+        this.checkCollisionWithBottle();
+        this.checkCollisionBottleWithEnemies();
+        this.checkCollisionWithEndboss();
+    }
+
+    checkCollisionWithEnemies() {
         this.level.enemies.forEach((enemy) => {
-            
             if (this.character.isColliding(enemy)) {
-                console.log('treffer')
-                this.character.hit();
-                this.statusbar_health.setPercentage(this.character.energy)
+                if (this.character.y > 235) {
+                    this.character.hit();
+                    this.statusbar_health.setPercentage(this.character.energy)
+                } else {
+                    let i = this.level.enemies.indexOf(enemy);
+                    this.level.enemies[i].animateDeadChicken();
+                }
             }
         });
     }
 
+    checkCollisionWithCoins() {
+        this.level.coins.forEach((coin) => {
+            if (this.character.isColliding(coin)) {
+                this.statusbar_coin.collectCoin();
+                let i = this.level.coins.indexOf(coin);
+                this.level.coins.splice(i, 1);
+            }
+        });
+    }
+
+    checkCollisionWithBottle() {
+        this.level.bottles.forEach((bottle) => {
+            if (this.character.isColliding(bottle)) {
+                this.statusbar_bottle.collectBottle();
+                let i = this.level.bottles.indexOf(bottle);
+                this.level.bottles.splice(i, 1);
+            }
+        });
+    }
+
+    checkCollisionBottleWithEnemies() {
+        this.level.enemies.forEach((enemy) => {
+            this.throwable.forEach((object) => {
+                if (object.isColliding(enemy)) {
+                    let i = this.level.enemies.indexOf(enemy);
+                    this.level.enemies[i].animateDeadChicken();
+                }
+            });
+        });
+    }
+
+    checkCollisionWithEndboss() {
+        this.level.endboss.forEach((endboss) => {
+            this.throwable.forEach((object) => {
+                if (object.isColliding(endboss)) {
+                    let i = this.level.endboss.indexOf(endboss);
+                    this.level.endboss[i].hit();
+                }
+            });
+        });
+    }
+
     checkThrowableObject() {
-        if (this.keyboard.D){
-            console.log("Checking throwable object...");
+        if (this.statusbar_bottle.bottles > 0 && this.keyboard.D) {
             let bottle = new ThrowableObject(this.character.x + 95, this.character.y + 40)
             this.throwable.push(bottle);
+            this.statusbar_bottle.reduceBottle();
         }
     }
+
 }

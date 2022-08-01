@@ -34,12 +34,14 @@ class Character extends MovableObject {
         './img/2_character_pepe/4_hurt/H-43.png'
     ];
 
-
+    energy = 100;
     y = 50;
-    world;
     speed = 10;
 
     walking_sound = new Audio('./audio/running.mp3');
+    jumping_sound = new Audio('./audio/jump.mp3');
+    // hurt_sound = new Audio('./audio/hurt.mp3'); // Kevin ersetzen
+    // dead_sound = new Audio('./audio/dead.mp3'); // Kevin ersetzen
 
     constructor() {
         super().loadImage('./img/2_character_pepe/1_idle/idle/I-1.png')
@@ -52,44 +54,85 @@ class Character extends MovableObject {
     }
 
     animate() {
-
         setInterval(() => {
-            this.walking_sound.pause();
-            if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
-                this.moveRight();
-                this.otherDirection = false;
-                this.walking_sound.play();
-            }
-            if (this.world.keyboard.LEFT && this.x > 0) {
-                this.moveLeft();
-                this.otherDirection = true;
-                this.walking_sound.play();
-            }
-            if ((this.world.keyboard.UP || this.world.keyboard.SPACE) && !this.isAboveGround()) {
-                this.jump();
-            }
-            if (this.x > 2157) {
-                this.world.camera_x = - 2157;
-            }else{
-                this.world.camera_x = - this.x + 50;
-            }
-            
+            this.characterMoves();
         }, 1000 / 60);
 
         setInterval(() => {
-            if (this.isDead()) {
-                this.playAnimation(this.IMAGES_DEAD);
-            } else if (this.isHurt()) {
-                this.playAnimation(this.IMAGES_HURT);
-            } else if (this.isAboveGround()) {
-                this.playAnimation(this.IMAGES_JUMPING);
-            } else {
-                if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
-                    this.playAnimation(this.IMAGES_WALKING);
-                }
-            }
-
+            this.characterImageStateDead();
+            this.characterImageStateHurt();
+            this.characterImageStateJumping();
+            this.characterImageStateWalking();
         }, 150);
-
     }
+
+    characterMoves() {
+        this.walking_sound.pause();
+        this.characterMovesRight();
+        this.characterMovesLeft();
+        this.characterJumping();
+        this.characterCamera();
+    }
+
+    characterMovesRight() {
+        if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
+            this.moveRight();
+            this.otherDirection = false;
+            this.walking_sound.play();
+        }
+    }
+
+    characterMovesLeft() {
+        if (this.world.keyboard.LEFT && this.x > 0) {
+            this.moveLeft();
+            this.otherDirection = true;
+            this.walking_sound.play();
+        }
+    }
+
+    characterJumping() {
+        if ((this.world.keyboard.UP || this.world.keyboard.SPACE) && !this.isAboveGround()) {
+            this.jump();
+            this.jumping_sound.play();
+        }
+    }
+
+    characterCamera() {
+        if (this.x > 2157) {
+            this.world.camera_x = - 2157;
+        } else {
+            this.world.camera_x = - this.x + 50;
+        }
+    }
+
+    characterImageStateDead() {
+        if (this.isDead()) {
+            this.playAnimation(this.IMAGES_DEAD);
+            document.getElementById('end_Screen_Image').classList.remove('hide')
+            setTimeout(() => {
+                window.location.reload();
+               }, 3000); 
+            // this.dead_sound.play(); // Kevin ersetzen
+        }
+    }
+
+    characterImageStateHurt() {
+        if (this.isHurt()) {
+            this.playAnimation(this.IMAGES_HURT);
+            // this.hurt_sound.play(); // Kevin ersetzen
+        }
+    }
+
+    characterImageStateJumping() {
+        if (this.isAboveGround()) {
+            this.playAnimation(this.IMAGES_JUMPING);
+        }
+    }
+
+    characterImageStateWalking() {
+        if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
+            this.playAnimation(this.IMAGES_WALKING);
+        }
+    }
+
 }

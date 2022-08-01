@@ -9,11 +9,28 @@ class StatusBarBottle extends StatusBar {
     ];
 
     x = 495;
+    bottles = 0;
 
     constructor() {
         super();
         this.loadImages(this.IMAGES);
         this.setPercentage(0);
+    }
+
+    collectBottle() {
+        this.bottles += 20;
+        if (this.bottles > 100) {
+            this.bottles = 100;
+        }
+        this.setPercentage(this.bottles);
+    }
+
+    reduceBottle() {
+        this.bottles -= 20;
+        if (this.bottles <= 0) {
+            this.bottles = 0;
+        }
+        this.setPercentage(this.bottles);
     }
 
 }
